@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(python3)",
+      "Bash(grep -E \"\\\\.\\(md|js|json\\)$\")",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Initial commit: Production-ready portfolio with 8 projects and enterprise-grade security *)"
+    ]
+  }
+}

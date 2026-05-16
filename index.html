@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NRS Portfolio</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'module'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.cdnfonts.com; font-src 'self' https://fonts.gstatic.com https://fonts.cdnfonts.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="description" content="Full-Stack AI Engineer | Building beautiful, intelligent products from pixel-perfect frontends to robust backends. Portfolio showcasing expertise in React, Python, Node.js, and advanced AI systems.">
+  <meta name="theme-color" content="#47105e">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/pixelpurl-2" rel="stylesheet">
+  <style>
+    :root {
+      --plum-deep: #47105e;
+      --orchid: #dc52de;
+      --mauve: #d893df;
+      --rose: #ea7098;
+      --rose-soft: #e19cb3;
+      --lilac-gray: #d7ccd8;
+      --paper: #d9d6d3;
+      --blush-paper: #dec5c9;
+    }
+
+    * { margin: 0; padding: 0; outline: none !important; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      background: var(--paper);
+      font-family: 'Inter', sans-serif;
+      color: var(--plum-deep);
+      -webkit-font-smoothing: antialiased;
+    }
+    body { overflow-x: hidden; overflow-y: auto; }
+    canvas { display: block; outline: none !important; }
+
+    #root {
+      position: fixed; inset: 0; width: 100vw; height: 100vh;
+      z-index: 0; pointer-events: none;
+    }
+
+    #loader {
+      position: fixed; inset: 0; z-index: 100;
+      background: var(--paper);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 18px;
+      transition: opacity 0.6s ease;
+    }
+    #loader.gone { opacity: 0; pointer-events: none; }
+    #loader .spinner {
+      width: 38px; height: 38px;
+      border: 2.5px solid rgba(71,16,94,0.15);
+      border-top-color: var(--orchid);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    #loader .loader-text {
+      font-size: 11px; letter-spacing: 3px; font-weight: 600;
+      color: var(--plum-deep); text-transform: uppercase;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #nav {
+      position: fixed; top: 0; left: 0; width: 100%;
+      padding: 18px 36px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 50; pointer-events: auto;
+      background: linear-gradient(to bottom, rgba(225,156,179,0.45) 0%, rgba(225,156,179,0) 100%);
+      backdrop-filter: blur(4px);
+    }
+    #nav .logo { font-size: 18px; font-weight: 800; color: var(--plum-deep); letter-spacing: -0.5px; }
+    #nav .logo span { color: var(--orchid); }
+    #nav .nav-links { display: flex; gap: 28px; }
+    #nav .nav-links a {
+      font-size: 12px; font-weight: 600; color: var(--plum-deep);
+      text-decoration: none; letter-spacing: 1.2px; text-transform: uppercase;
+      cursor: pointer; transition: color 0.3s; position: relative;
+    }
+    #nav .nav-links a:hover, #nav .nav-links a.active { color: var(--orchid); }
+    #nav .nav-links a.active::after {
+      content: ''; position: absolute; bottom: -6px; left: 0; right: 0; height: 2px;
+      background: var(--orchid); border-radius: 1px;
+    }
+
+    #dots {
+      position: fixed; right: 28px; top: 50%; transform: translateY(-50%);
+      z-index: 50; display: flex; flex-direction: column; gap: 14px;
+      pointer-events: auto;
+    }
+    #dots .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: transparent; border: 1.5px solid rgba(71,16,94,0.5);
+      cursor: pointer; transition: all 0.3s;
+    }
+    #dots .dot:hover { transform: scale(1.25); border-color: var(--orchid); }
+    #dots .dot.active {
+      background: var(--orchid); border-color: var(--orchid);
+      transform: scale(1.3);
+      box-shadow: 0 0 12px rgba(220,82,222,0.6);
+    }
+
+    #scroll-hint {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      z-index: 50; pointer-events: none;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--plum-deep); opacity: 0.75;
+      transition: opacity 0.4s;
+    }
+    #scroll-hint.hidden { opacity: 0; }
+    #scroll-hint .scroll-text {
+      font-size: 10px; letter-spacing: 2.5px; font-weight: 600; text-transform: uppercase;
+    }
+    #scroll-hint .scroll-arrow {
+      width: 22px; height: 36px; border: 1.5px solid var(--plum-deep);
+      border-radius: 11px; position: relative;
+    }
+    #scroll-hint .scroll-arrow::after {
+      content: ''; position: absolute; left: 50%; top: 6px;
+      width: 3px; height: 7px; background: var(--plum-deep);
+      border-radius: 2px; transform: translateX(-50%);
+      animation: scrollDot 1.6s ease-in-out infinite;
+    }
+    @keyframes scrollDot {
+      0% { opacity: 0; top: 6px; }
+      40% { opacity: 1; }
+      80% { opacity: 0; top: 18px; }
+      100% { opacity: 0; top: 18px; }
+    }
+
+    main { position: relative; z-index: 2; pointer-events: none; }
+    .scene {
+      position: relative; min-height: 100vh; width: 100%;
+      display: flex; align-items: center; padding: 100px 6vw 80px;
+    }
+    .scene-content { pointer-events: auto; max-width: 520px; will-change: transform, opacity; }
+    .scene-content.right { margin-left: auto; }
+    .scene-content.center { margin: 0 auto; text-align: center; }
+
+    .glass {
+      background: rgba(217,214,211,0.7);
+      backdrop-filter: blur(18px) saturate(1.1);
+      -webkit-backdrop-filter: blur(18px) saturate(1.1);
+      border: 1px solid rgba(216,147,223,0.25);
+      border-radius: 18px;
+      padding: 32px 34px;
+      box-shadow: 0 20px 60px -20px rgba(71,16,94,0.25);
+    }
+
+    .eyebrow {
+      font-size: 16px; font-weight: 700; color: var(--plum-deep);
+      letter-spacing: 3px; text-transform: uppercase; margin-bottom: 14px;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .eyebrow::before {
+      content: ''; width: 28px; height: 1.5px; background: var(--plum-deep); display: inline-block;
+    }
+
+    #hero h1 {
+      font-size: clamp(36px, 5vw, 58px); font-weight: 800;
+      color: var(--plum-deep); line-height: 1.05;
+      letter-spacing: -1.5px; margin-bottom: 18px;
+    }
+    #hero h1 .name-font {
+      display: block;
+      font-family: 'PixelPurl', 'Inter', sans-serif;
+      font-size: 1.15em; letter-spacing: 0; line-height: 1;
+      color: #ffffff; margin-bottom: 8px;
+      text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 4px 14px rgba(71,16,94,0.4);
+    }
+    #hero h1 .accent { color: var(--mauve); }
+    #hero .subtitle {
+      font-size: 17px; font-weight: 400; color: var(--plum-deep);
+      line-height: 1.55; margin-bottom: 26px; opacity: 0.85;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .tags span {
+      font-size: 11px; font-weight: 600; color: var(--plum-deep);
+      background: rgba(216,147,223,0.18); border: 1px solid rgba(216,147,223,0.4);
+      padding: 6px 14px; border-radius: 20px; letter-spacing: 0.5px;
+    }
+    .cta-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .btn-primary, .btn-secondary {
+      font-size: 13px; font-weight: 600;
+      padding: 12px 26px; border-radius: 10px;
+      cursor: pointer; letter-spacing: 0.5px;
+      transition: all 0.3s; border: none;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-primary {
+      color: #fff; background: var(--plum-deep);
+      box-shadow: 0 8px 24px -8px rgba(71,16,94,0.5);
+    }
+    .btn-primary:hover { background: #64207f; transform: translateY(-2px); box-shadow: 0 12px 30px -10px rgba(71,16,94,0.55); }
+    .btn-secondary {
+      color: var(--plum-deep); background: transparent;
+      border: 1.5px solid rgba(71,16,94,0.35);
+    }
+    .btn-secondary:hover { border-color: var(--orchid); color: var(--orchid); transform: translateY(-2px); }
+
+    .section-title {
+      font-size: clamp(30px, 4vw, 44px); font-weight: 800;
+      color: var(--plum-deep); line-height: 1.1; letter-spacing: -1px;
+      margin-bottom: 10px;
+    }
+    .section-title .accent { color: var(--orchid); }
+    .section-subtitle {
+      font-size: 15px; font-weight: 400; color: var(--plum-deep);
+      line-height: 1.55; margin-bottom: 24px; opacity: 0.8;
+    }
+    .section-block { margin-top: 20px; }
+    .section-block h3 {
+      font-size: 10px; font-weight: 700; color: var(--mauve);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .skill-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-chip {
+      font-size: 12px; font-weight: 500; color: var(--plum-deep);
+      background: rgba(216,147,223,0.14);
+      border: 1px solid rgba(216,147,223,0.3);
+      padding: 7px 14px; border-radius: 7px;
+    }
+
+    .project-grid { display: grid; gap: 12px; }
+    .project-card {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(216,147,223,0.25);
+      border-radius: 14px; padding: 18px 20px;
+      transition: all 0.3s;
+    }
+    .project-card:hover {
+      transform: translateY(-3px) translateX(-3px);
+      box-shadow: 0 12px 30px -10px rgba(71,16,94,0.25);
+      border-color: rgba(220,82,222,0.4);
+    }
+    .project-card .proj-title { font-size: 15px; font-weight: 700; color: var(--plum-deep); margin-bottom: 5px; }
+    .project-card .proj-desc { font-size: 12.5px; color: var(--plum-deep); opacity: 0.75; line-height: 1.55; margin-bottom: 10px; }
+    .project-card .proj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .project-card .proj-tags span {
+      font-size: 10px; font-weight: 600; color: var(--orchid);
+      background: rgba(220,82,222,0.1); padding: 3px 9px; border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .timeline { position: relative; padding-left: 22px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 5px; top: 6px; bottom: 6px;
+      width: 2px; background: linear-gradient(to bottom, var(--orchid), rgba(220,82,222,0.1));
+    }
+    .timeline-item { position: relative; margin-bottom: 18px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -22px; top: 6px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--orchid); border: 2px solid var(--paper);
+      box-shadow: 0 0 0 2px var(--orchid);
+    }
+    .timeline-item .ti-role { font-size: 14px; font-weight: 700; color: var(--plum-deep); }
+    .timeline-item .ti-org { font-size: 12px; font-weight: 600; color: var(--orchid); }
+    .timeline-item .ti-date { font-size: 11px; color: var(--plum-deep); opacity: 0.6; margin-bottom: 4px; }
+    .timeline-item .ti-desc { font-size: 12.5px; color: var(--plum-deep); opacity: 0.78; line-height: 1.55; }
+
+    .contact-grid { display: flex; flex-direction: column; gap: 4px; }
+    .contact-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 0; border-bottom: 1px solid rgba(216,147,223,0.18);
+    }
+    .contact-row:last-child { border-bottom: none; }
+    .contact-row .contact-icon { font-size: 18px; flex-shrink: 0; }
+    .contact-row .contact-label { font-size: 10px; color: var(--mauve); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .contact-row .contact-value { font-size: 14px; color: var(--plum-deep); font-weight: 600; }
+
+    .gradient-text { background: linear-gradient(135deg, var(--orchid) 0%, var(--rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .skill-category {
+      margin-bottom: 28px;
+    }
+    .skill-category-title {
+      font-size: 10px; font-weight: 800; color: var(--plum-deep);
+      letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .skill-category-title::before {
+      content: ''; width: 36px; height: 2px;
+      background: linear-gradient(90deg, var(--orchid), var(--rose));
+      border-radius: 1px;
+    }
+    .skill-level-container {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .skill-item {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .skill-item-name {
+      font-size: 13px; font-weight: 600; color: var(--plum-deep);
+    }
+    .skill-level-bar {
+      height: 6px; background: rgba(216,147,223,0.15); border-radius: 3px;
+      overflow: hidden; box-shadow: inset 0 1px 3px rgba(71,16,94,0.1);
+    }
+    .skill-level-fill {
+      height: 100%; background: linear-gradient(90deg, var(--orchid), var(--mauve));
+      border-radius: 3px;
+      transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .project-badge {
+      display: inline-block; font-size: 9px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .badge-frontend { background: rgba(234,112,152,0.15); color: var(--rose); }
+    .badge-backend { background: rgba(216,147,223,0.15); color: var(--mauve); }
+    .badge-fullstack { background: linear-gradient(135deg, rgba(220,82,222,0.15), rgba(234,112,152,0.15)); color: var(--orchid); }
+    .badge-ai { background: rgba(135,71,150,0.12); color: var(--plum-deep); }
+
+    .project-card {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(216,147,223,0.25);
+      border-radius: 14px; padding: 18px 20px;
+      transition: all 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .project-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(220,82,222,0.05), rgba(234,112,152,0.05));
+      opacity: 0; transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px -12px rgba(71,16,94,0.3);
+      border-color: rgba(220,82,222,0.5);
+    }
+    .project-card:hover::before { opacity: 1; }
+
+    .ti-skills {
+      font-size: 11px; color: var(--orchid); font-weight: 600;
+      margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .ti-skills span {
+      background: rgba(220,82,222,0.12); padding: 3px 8px;
+      border-radius: 4px; letter-spacing: 0.3px;
+    }
+
+    @media (max-width: 900px) {
+      #nav { padding: 14px 20px; }
+      #nav .nav-links { gap: 16px; }
+      #nav .nav-links a { font-size: 10px; letter-spacing: 0.8px; }
+      #dots { right: 14px; }
+      .scene { padding: 90px 5vw 60px; }
+      .scene-content { max-width: 92%; }
+      .scene-content.right { margin-left: 0; }
+      .glass { padding: 24px 22px; }
+      #hero h1 { font-size: 36px; }
+      .skill-category-title::before { width: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="spinner"></div>
+    <div class="loader-text">Loading workspace</div>
+  </div>
+
+  <div id="root"></div>
+
+  <nav id="nav">
+    <div class="logo">NRS<span>.</span></div>
+    <div class="nav-links">
+      <a data-target="hero">Home</a>
+      <a data-target="about">About</a>
+      <a data-target="expertise">Expertise</a>
+      <a data-target="projects">Projects</a>
+      <a data-target="journey">Journey</a>
+      <a data-target="contact">Contact</a>
+    </div>
+  </nav>
+
+  <div id="dots">
+    <div class="dot active" data-index="0" title="Home"></div>
+    <div class="dot" data-index="1" title="About"></div>
+    <div class="dot" data-index="2" title="Expertise"></div>
+    <div class="dot" data-index="3" title="Projects"></div>
+    <div class="dot" data-index="4" title="Journey"></div>
+    <div class="dot" data-index="5" title="Contact"></div>
+  </div>
+
+  <div id="scroll-hint">
+    <div class="scroll-text">Scroll to explore</div>
+    <div class="scroll-arrow"></div>
+  </div>
+
+  <main>
+    <section class="scene" id="hero" data-section="0">
+      <div class="scene-content">
+        <div class="eyebrow">Hello, I'm</div>
+        <h1>
+          <span class="name-font">NIGARISH REHMAN SARMAD</span>
+          <span class="accent">Full-Stack AI Engineer</span>
+        </h1>
+        <p class="subtitle">Building beautiful, intelligent products — from pixel-perfect frontends to robust, scalable backends.</p>
+        <div class="tags">
+          <span>React & TypeScript</span><span>Python & Node.js</span><span>System Design</span><span>LLMs & AI</span><span>UI/UX Design</span>
+        </div>
+        <div class="cta-row">
+          <a class="btn-primary" data-target="projects">View Projects</a>
+          <a class="btn-secondary" data-target="contact">Get in Touch</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="about" data-section="1">
+      <div class="scene-content right glass">
+        <div class="eyebrow">About</div>
+        <h2 class="section-title">A curious mind <span class="accent">at work.</span></h2>
+        <p class="section-subtitle">I’m passionate about turning machine learning research into business-ready products that solve real problems. From experimentation to deployment, I enjoy creating intelligent systems that bring measurable value and meaningful user experiences..</p>
+        <div class="section-block">
+          <h3>Technical Stack</h3>
+          <div class="skill-grid">
+            <span class="skill-chip">Python</span><span class="skill-chip">PyTorch</span><span class="skill-chip">TensorFlow</span><span class="skill-chip">VLM Fine-tuning</span><span class="skill-chip">Hugging Face</span><span class="skill-chip">LangChain</span><span class="skill-chip">Claude, ChatGPT, Ollama, Microsoft Co-pilot</span><span class="skill-chip">Docker</span><span class="skill-chip">AWS</span><span class="skill-chip">FastAPI</span><span class="skill-chip">React</span>
+          </div>
+        </div>
+        <div class="section-block">
+          <h3>Domains</h3>
+          <div class="skill-grid">
+            <span class="skill-chip">Large Language Models</span><span class="skill-chip">Computer Vision</span><span class="skill-chip">Agentic AI</span><span class="skill-chip">Generative Models</span><span class="skill-chip">RAG Systems</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="expertise" data-section="2">
+      <div class="scene-content glass">
+        <div class="eyebrow">Expertise</div>
+        <h2 class="section-title">What I <span class="accent">do best.</span></h2>
+        <p class="section-subtitle">Full-stack capabilities spanning beautiful frontends, powerful backends, and intelligent AI systems.</p>
+
+        <div class="skill-category">
+          <div class="skill-category-title">Frontend Engineering</div>
+          <div class="skill-level-container">
+            <div class="skill-item">
+              <div class="skill-item-name">React & Modern JavaScript</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 95%;"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-name">TypeScript & Type Safety</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 92%;"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-name">UI/UX Design & Animation</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 88%;"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-name">Next.js & Performance</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 85%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-category-title">Backend Engineering</div>
+          <div class="skill-level-container">
+            <div class="skill-item">
+              <div class="skill-item-name">Node.js & API Design</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 90%;"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-name">Python & FastAPI</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 94%;"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-name">Databases & Query Optimization</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 87%;"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-name">System Architecture & Scaling</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 85%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-category-title">AI & Machine Learning</div>
+          <div class="skill-level-container">
+            <div class="skill-item">
+              <div class="skill-item-name">LLMs & Prompt Engineering</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 96%;"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-name">Deep Learning & PyTorch</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 93%;"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-name">Computer Vision & Image Processing</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 89%;"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-item-name">RAG & Vector Databases</div>
+              <div class="skill-level-bar"><div class="skill-level-fill" style="width: 91%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="projects" data-section="3">
+      <div class="scene-content glass">
+        <div class="eyebrow">Projects</div>
+        <h2 class="section-title">Things I've <span class="accent">built.</span></h2>
+        <p class="section-subtitle">Showcasing full-stack work — from elegant frontends to intelligent backends and AI systems.</p>
+        <div class="project-grid">
+          <div class="project-card">
+            <div class="project-badge badge-fullstack">Full-Stack</div>
+            <div class="proj-title">Medical Image Analysis | Computer Vision</div>
+            <div class="proj-desc">Full-stack multi-modal medical imaging system with FastAPI backend serving 3D anomaly detection (82.6% precision using ResNet-XGBoost-Isolation Forest with M3d-CAM interpretability) and automated radiology report generation. Fine-tuned CheXagent and RAD-DINO across multiple decoder architectures with seamless REST API integration.</div>
+            <div class="proj-tags"><span>FastAPI</span><span>ResNet</span><span>XGBoost</span><span>Computer Vision</span><span>Deep Learning</span><span>RAD-DINO</span><span>REST APIs</span></div>
+          </div>
+          <div class="project-card">
+            <div class="project-badge badge-backend">Backend</div>
+            <div class="proj-title">Querying Tabular Data using Agentic AI</div>
+            <div class="proj-desc">Architected an agentic text-to-SQL pipeline using LangChain + Ollama on the Spider benchmark (200+ SQLite databases). Implemented a 4-stage multi-agent workflow (Manager–Coder–Executor–Formatter) with auto-detection of local LLMs (Qwen2.5/SQLcoder), handling complex joins, aggregations, and error recovery across the pipeline.</div>
+            <div class="proj-tags"><span>LangChain</span><span>Ollama</span><span>Text-to-SQL</span><span>Agentic AI</span><span>SQLite</span><span>Qwen2.5</span><span>Multi-agent Systems</span></div>
+          </div>
+          <div class="project-card">
+            <div class="project-badge badge-fullstack">Full-Stack</div>
+            <div class="proj-title">AI-based Answer Validator App</div>
+            <div class="proj-desc">Full-stack web application with React frontend and FastAPI backend that evaluates descriptive answers against instructor-provided solutions using semantic similarity. Modular pipeline supporting multiple input formats (text files, CSV, typed responses) for scalable educational assessment.</div>
+            <div class="proj-tags"><span>React</span><span>FastAPI</span><span>Semantic Similarity</span><span>NLP</span><span>MLOps</span><span>Python</span></div>
+          </div>
+          <div class="project-card">
+            <div class="project-badge badge-fullstack">Full-Stack</div>
+            <div class="proj-title">AI-powered RAG Search Application</div>
+            <div class="proj-desc">End-to-end RAG system with Next.js 19 + React frontend supporting PDF/DOCX/TXT uploads. Implements dual pipelines: ingestion (extract → chunk → embed via Ollama nomic-embed-text → store in Supabase) and retrieval (query → embed → pgvector semantic search → LLM answer generation). Features document classification, summarization, vector search with pgvector, and authenticated access via cookie-based middleware.</div>
+            <div class="proj-tags"><span>Next.js 19</span><span>React</span><span>TypeScript</span><span>Supabase</span><span>pgvector</span><span>Ollama</span><span>LangChain</span><span>RAG</span><span>Tailwind CSS</span></div>
+          </div>
+          <div class="project-card">
+            <div class="project-badge badge-ai">AI/ML</div>
+            <div class="proj-title">NTIRE2025 Challenge: Cross-Domain Few-Shot Object Detection</div>
+            <div class="proj-desc">Research implementation of few-shot object detection pipeline using HuggingFace's pre-trained DETR (DEtection TRansformer) on 5-shot COCO 2017 subset. Leveraged transformer-based architecture to enhance detection accuracy across diverse domains, submitted to CVPR NTIRE2025 challenge.</div>
+            <div class="proj-tags"><span>DETR</span><span>Few-Shot Learning</span><span>Object Detection</span><span>Transformers</span><span>HuggingFace</span><span>COCO</span><span>Computer Vision</span><span>CVPR</span></div>
+          </div>
+          <div class="project-card">
+            <div class="project-badge badge-ai">AI/ML</div>
+            <div class="proj-title">Motorbike & Helmet Detection using YOLOv3</div>
+            <div class="proj-desc">Dual-model real-time detection pipeline using YOLOv3 and OpenCV's DNN module to simultaneously detect persons on motorbikes and helmet usage from 795 annotated images. Implemented bounding box extraction, NMS (Non-Maximum Suppression), blob preprocessing at 416×416 resolution, and confidence thresholding (0.5 min, 0.3 NMS). Achieved ~654 ms average inference per model with 0.76 FPS combined on CPU.</div>
+            <div class="proj-tags"><span>YOLOv3</span><span>OpenCV</span><span>DNN</span><span>Object Detection</span><span>NMS</span><span>Computer Vision</span><span>Real-time Detection</span></div>
+          </div>
+          <div class="project-card">
+            <div class="project-badge badge-ai">AI/ML</div>
+            <div class="proj-title">Emotion Detection using CNN</div>
+            <div class="proj-desc">Built a 7-layer CNN for real-time facial emotion recognition achieving 89% validation accuracy across 7 expressions from 48×48 grayscale images. Deployed with OpenCV and Haar Cascade for live webcam detection, enabling real-time emotion classification on edge devices.</div>
+            <div class="proj-tags"><span>CNN</span><span>Deep Learning</span><span>Keras</span><span>Facial Recognition</span><span>OpenCV</span><span>Haar Cascade</span><span>Real-time Detection</span></div>
+          </div>
+          <div class="project-card">
+            <div class="project-badge badge-backend">Backend</div>
+            <div class="proj-title">User Authentication using Socket Programming</div>
+            <div class="proj-desc">Scalable JWT-based stateless authentication system supporting both HTTP and WebSocket protocols. Implemented secure real-time socket communication with token-based authentication, bcrypt password hashing, and forgot/reset password functionality. Features Flask-SocketIO integration for seamless HTTP/WebSocket handling, session & token control, and a secret messaging feature with personalized motivational messages.</div>
+            <div class="proj-tags"><span>Flask</span><span>Flask-SocketIO</span><span>JWT</span><span>WebSocket</span><span>bcrypt</span><span>Authentication</span><span>Real-time Communication</span><span>Python</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="journey" data-section="4">
+      <div class="scene-content right glass">
+        <div class="eyebrow">Journey</div>
+        <h2 class="section-title">Where I've <span class="accent">been.</span></h2>
+        <p class="section-subtitle">From research labs to production systems &mdash; the path that shaped how I think about AI.</p>
+        <div class="section-block">
+          <h3>Experience</h3>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="ti-role">Senior AI Engineer</div>
+              <div class="ti-org">TechCorp AI Labs</div>
+              <div class="ti-date">2023 &mdash; Present</div>
+              <div class="ti-desc">Leading a team of 5 engineers building next-gen conversational AI. Reduced inference costs by 40% through model distillation.</div>
+              <div class="ti-skills"><span>LLMs</span><span>Team Leadership</span><span>FastAPI</span><span>RAG</span><span>Optimization</span></div>
+            </div>
+            <div class="timeline-item">
+              <div class="ti-role">Full-Stack Engineer</div>
+              <div class="ti-org">DataFlow Inc.</div>
+              <div class="ti-date">2021 &mdash; 2023</div>
+              <div class="ti-desc">Built computer vision pipelines and web interfaces for automated quality inspection. 98.2% accuracy real-time object detection with React dashboard.</div>
+              <div class="ti-skills"><span>Computer Vision</span><span>React</span><span>Python</span><span>Node.js</span><span>System Design</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="section-block">
+          <h3>Education</h3>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="ti-role">M.S. Computer Science</div>
+              <div class="ti-org">Stanford University</div>
+              <div class="ti-date">2019 &mdash; 2021</div>
+              <div class="ti-desc">AI/ML concentration. Thesis on efficient attention mechanisms for long-document understanding.</div>
+              <div class="ti-skills"><span>Transformers</span><span>NLP</span><span>Research</span><span>PyTorch</span><span>Paper Writing</span></div>
+            </div>
+            <div class="timeline-item">
+              <div class="ti-role">B.S. Computer Science</div>
+              <div class="ti-org">UC Berkeley</div>
+              <div class="ti-date">2015 &mdash; 2019</div>
+              <div class="ti-desc">Dean's List. Minor in Mathematics. AI research club president. Strong foundation in algorithms, systems, and full-stack development.</div>
+              <div class="ti-skills"><span>Algorithms</span><span>Systems Design</span><span>Web Dev</span><span>Mathematics</span><span>Leadership</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="contact" data-section="5">
+      <div class="scene-content center glass">
+        <div class="eyebrow">Get in Touch</div>
+        <h2 class="section-title">Let's build <span class="accent">something.</span></h2>
+        <p class="section-subtitle">Whether it's a research collaboration, open-source contribution, or a full-time role &mdash; I'd love to hear from you.</p>
+        <div class="contact-grid" style="text-align:left;">
+          <div class="contact-row">
+            <span class="contact-icon">@</span>
+            <div><div class="contact-label">Email</div><div class="contact-value"><a href="mailto:nigarish019@gmail.com" style="color: inherit; text-decoration: none;">nigarish019@gmail.com</a></div></div>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">&lt;/&gt;</span>
+            <div><div class="contact-label">GitHub</div><div class="contact-value"><a href="https://github.com/nigarishrehmansarmad" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">github.com/nigarishrehmansarmad</a></div></div>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">in</span>
+            <div><div class="contact-label">LinkedIn</div><div class="contact-value"><a href="https://www.linkedin.com/in/nigarish-rehman-sarmad-swe/" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">linkedin.com/in/nigarish-rehman-sarmad-swe</a></div></div>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">~</span>
+            <div><div class="contact-label">Location</div><div class="contact-value">Karachi, Pakistan &middot; Remote</div></div>
+          </div>
+        </div>
+        <div class="cta-row" style="margin-top:24px; justify-content:center;">
+          <a class="btn-primary" href="mailto:nigarish@example.com">Send a Message</a>
+          <a class="btn-secondary" data-target="hero">Back to Top</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/scene.js"></script>
+</body>
+</html>
