@@ -1,4 +1,4 @@
-# Nigarish Rehman Sarmad - Full-Stack AI Engineer Portfolio
+# Nigarish Rehman Sarmad - AI Engineer Portfolio
 
 > **Building beautiful, intelligent products — from pixel-perfect frontends to robust backends**
 
